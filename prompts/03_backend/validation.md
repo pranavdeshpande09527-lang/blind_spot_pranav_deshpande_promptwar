@@ -1,0 +1,16 @@
+# Third Eye — validation
+
+## Required context
+
+Read README.md, prompts/00_master/project_context.md, prompts/00_master/coding_rules.md, docs/contracts.md and docs/api.md from the project root before implementing this task. Inspect existing code first. The current request is to prepare prompts; these instructions guide the later application implementation.
+
+## Task
+
+- Create shared Zod schemas for configuration, route parameters, decision inputs, provider outputs and persisted JSON. Reject unknown mutation fields.
+- Decision text max 2000 characters; context/reasons max 12000 each; options/constraints/affected max 4000 each; deadline max 500; reflection answer max 2000; body 64 KB. Require decision plus context or reasons.
+- Preserve free-text deadline/time horizon. Validate UUIDs, enums, quote membership and source IDs. Invalid provider output cannot be marked completed.
+
+## Completion requirements
+
+Deliver the task’s concrete implementation or documented scope decision, with actual verification appropriate to its risk. Keep the existing frontend design. Follow the canonical contracts; if a contract must change, update all affected implementations and documentation together. Report missing credentials, failed checks and untested deployment steps honestly. Never hardcode dates, fabricate data or choose a decision for the user.
+

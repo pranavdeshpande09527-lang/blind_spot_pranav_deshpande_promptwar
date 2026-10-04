@@ -1,0 +1,16 @@
+# Third Eye — tools
+
+## Required context
+
+Read README.md, prompts/00_master/project_context.md, prompts/00_master/coding_rules.md, docs/contracts.md and docs/api.md from the project root before implementing this task. Inspect existing code first. The current request is to prepare prompts; these instructions guide the later application implementation.
+
+## Task
+
+- Use only tools necessary for implementation: package manager, compiler, tests, Supabase tooling and Render deployment configuration.
+- Verify current SDK interfaces before coding. Prefer a single package lock and reproducible builds.
+- Document tool commands and outputs accurately; unavailable tools are blockers or explicit setup steps, never successful mock operations.
+
+## Completion requirements
+
+Deliver the task’s concrete implementation or documented scope decision, with actual verification appropriate to its risk. Keep the existing frontend design. Follow the canonical contracts; if a contract must change, update all affected implementations and documentation together. Report missing credentials, failed checks and untested deployment steps honestly. Never hardcode dates, fabricate data or choose a decision for the user.
+

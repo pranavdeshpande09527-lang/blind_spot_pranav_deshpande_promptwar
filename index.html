@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>THIRD EYE — Think Before You Decide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Passion+One:wght@400;700;900&family=Libre+Franklin:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f5f0e8;
+      --ink: #1a1a18;
+      --ink-mid: #3d3d3a;
+      --ink-light: #7a7a75;
+      --rule: #1a1a18;
+      --rule-soft: #c8c4bc;
+      --red: #b5272a;
+      --red-pale: #fbeaea;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'Libre Franklin', sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    /* ── MASTHEAD ── */
+    .masthead {
+      border-bottom: 3px solid var(--rule);
+      padding: 0 24px;
+    }
+    .masthead-top {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      padding: 6px 0 4px;
+      border-bottom: 1px solid var(--rule-soft);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      color: var(--ink-light);
+      text-transform: uppercase;
+    }
+    .masthead-title {
+      font-family: 'Passion One', sans-serif;
+      font-size: clamp(48px, 8vw, 88px);
+      font-weight: 900;
+      letter-spacing: -0.01em;
+      line-height: 1;
+      text-align: center;
+      padding: 10px 0 6px;
+    }
+    .masthead-sub {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 6px 0;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+    }
+    .masthead-sub span { display: inline-block; }
+    .masthead-sub .dot { width: 3px; height: 3px; background: var(--ink-mid); display: inline-block; }
+
+    /* ── LAYOUT ── */
+    .page-wrap { max-width: 1100px; margin: 0 auto; padding: 0 24px 48px; }
+
+    .section-rule { border: none; border-top: 1px solid var(--rule); margin: 0; }
+    .section-rule.thick { border-top: 2px solid var(--rule); }
+    .section-rule.soft { border-top: 1px solid var(--rule-soft); }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      padding: 10px 0 6px;
+      border-bottom: 1px solid var(--rule-soft);
+      margin-bottom: 16px;
+    }
+    .section-label {
+      font-family: 'Libre Franklin', sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+    }
+    .section-label.red { color: var(--red); }
+    .section-num {
+      font-family: 'Passion One', sans-serif;
+      font-size: 11px;
+      color: var(--ink-light);
+    }
+    .section-headline {
+      font-family: 'Passion One', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      line-height: 1.1;
+    }
+
+    /* ── INPUT FORM ── */
+    .input-section { padding: 20px 0; }
+
+    .input-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      border: 1px solid var(--rule);
+    }
+
+    .input-field {
+      border-right: 1px solid var(--rule-soft);
+      border-bottom: 1px solid var(--rule-soft);
+    }
+    .input-field:nth-child(2n) { border-right: none; }
+    .input-field.full { grid-column: 1 / -1; border-right: none; }
+    .input-field:last-of-type { border-bottom: none; }
+
+    .field-label {
+      display: block;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      background: var(--ink);
+      color: var(--bg);
+      padding: 5px 10px;
+    }
+    .field-label span {
+      color: var(--ink-light);
+      font-weight: 400;
+      letter-spacing: 0.06em;
+      text-transform: none;
+      font-size: 8px;
+    }
+
+    .field-input, .field-textarea {
+      width: 100%;
+      background: var(--bg);
+      border: none;
+      outline: none;
+      font-family: 'Libre Franklin', sans-serif;
+      font-size: 13px;
+      color: var(--ink);
+      padding: 10px;
+      resize: none;
+      display: block;
+    }
+    .field-textarea { min-height: 72px; }
+    .field-textarea.tall { min-height: 100px; }
+    .field-input::placeholder, .field-textarea::placeholder { color: var(--ink-light); }
+
+    .action-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid var(--rule);
+      border-top: none;
+      padding: 12px 16px;
+      gap: 12px;
+    }
+    .action-hint {
+      font-size: 11px;
+      color: var(--ink-light);
+      letter-spacing: 0.04em;
+    }
+
+    .btn-examine {
+      font-family: 'Passion One', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      background: var(--ink);
+      color: var(--bg);
+      border: none;
+      padding: 10px 32px;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: background 0.15s;
+    }
+    .btn-examine:hover { background: var(--red); }
+    .btn-examine:disabled { background: var(--ink-light); cursor: not-allowed; }
+
+    /* ── LOADING ── */
+    .loading-bar {
+      height: 3px;
+      background: var(--rule-soft);
+      position: relative;
+      overflow: hidden;
+    }
+    .loading-bar::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -40%;
+      height: 100%;
+      width: 40%;
+      background: var(--ink);
+      animation: loading 1.2s ease-in-out infinite;
+    }
+    @keyframes loading {
+      0% { left: -40%; }
+      100% { left: 100%; }
+    }
+    .loading-label {
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      padding: 8px 0;
+    }
+
+    /* ── ANALYSIS WRAPPER ── */
+    #analysis-output { display: none; }
+    #analysis-output.visible { display: block; }
+
+    /* ── SUMMARY PANEL ── */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0;
+      border: 1px solid var(--rule);
+      margin-bottom: 20px;
+    }
+    .summary-cell {
+      padding: 10px 14px;
+      border-right: 1px solid var(--rule-soft);
+      border-bottom: 1px solid var(--rule-soft);
+    }
+    .summary-cell:nth-child(3n) { border-right: none; }
+    .summary-cell.wide { grid-column: span 3; border-right: none; }
+    .summary-cell-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-bottom: 4px;
+    }
+    .summary-cell-val {
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 1.4;
+    }
+
+    /* ── ASSUMPTION CARDS ── */
+    .assumption-list { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--rule); }
+    .assumption-item {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--rule-soft);
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 12px;
+      align-items: start;
+    }
+    .assumption-item:last-child { border-bottom: none; }
+    .assumption-tag {
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 3px 7px;
+      border: 1px solid var(--rule-soft);
+      white-space: nowrap;
+      line-height: 1.4;
+    }
+    .assumption-tag.warn { border-color: var(--red); color: var(--red); background: var(--red-pale); }
+    .assumption-body { }
+    .assumption-text { font-size: 13px; font-weight: 500; margin-bottom: 4px; }
+    .assumption-explanation { font-size: 12px; color: var(--ink-mid); margin-bottom: 6px; line-height: 1.4; }
+    .assumption-q {
+      font-size: 11px;
+      font-style: italic;
+      color: var(--ink-mid);
+      border-left: 2px solid var(--rule-soft);
+      padding-left: 8px;
+    }
+
+    /* ── BLIND SPOT COLUMNS ── */
+    .blindspot-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0;
+      border: 1px solid var(--rule);
+      margin-bottom: 4px;
+    }
+    .blindspot-col {
+      border-right: 1px solid var(--rule-soft);
+      padding: 12px 14px;
+    }
+    .blindspot-col:last-child { border-right: none; }
+    .blindspot-col-label {
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      padding-bottom: 8px;
+      margin-bottom: 8px;
+      border-bottom: 1px solid var(--rule-soft);
+    }
+    .blindspot-item { margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--rule-soft); }
+    .blindspot-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+    .blindspot-priority {
+      display: inline-block;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 2px 5px;
+      margin-bottom: 5px;
+    }
+    .priority-high { background: var(--red); color: white; }
+    .priority-medium { background: var(--ink); color: var(--bg); }
+    .priority-low { border: 1px solid var(--rule-soft); color: var(--ink-light); }
+    .blindspot-factor { font-size: 13px; font-weight: 600; line-height: 1.3; margin-bottom: 4px; }
+    .blindspot-why { font-size: 12px; color: var(--ink-mid); margin-bottom: 4px; line-height: 1.4; }
+    .blindspot-relates {
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      color: var(--ink-light);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+    .blindspot-q {
+      font-size: 11px;
+      font-style: italic;
+      color: var(--ink-mid);
+      border-left: 2px solid var(--red);
+      padding-left: 8px;
+    }
+
+    /* ── CONFLICTS ── */
+    .conflict-list { border: 1px solid var(--rule); }
+    .conflict-item {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 0;
+      border-bottom: 1px solid var(--rule-soft);
+    }
+    .conflict-item:last-child { border-bottom: none; }
+    .conflict-num {
+      font-family: 'Passion One', sans-serif;
+      font-size: 18px;
+      text-align: center;
+      padding: 12px 4px;
+      border-right: 1px solid var(--rule-soft);
+      background: var(--ink);
+      color: var(--bg);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 14px;
+    }
+    .conflict-body { padding: 12px 14px; }
+    .conflict-headline { font-size: 13px; font-weight: 700; margin-bottom: 4px; color: var(--red); }
+    .conflict-desc { font-size: 12px; color: var(--ink-mid); line-height: 1.4; }
+
+    /* ── PERSPECTIVES ── */
+    .perspective-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      border: 1px solid var(--rule);
+    }
+    .perspective-cell {
+      border-right: 1px solid var(--rule-soft);
+      border-bottom: 1px solid var(--rule-soft);
+      padding: 12px 14px;
+    }
+    .perspective-cell:nth-child(2n) { border-right: none; }
+    .perspective-cell:nth-last-child(-n+2) { border-bottom: none; }
+    .perspective-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .perspective-marker {
+      display: inline-block;
+      width: 8px; height: 8px;
+      background: var(--ink);
+    }
+    .perspective-questions { }
+    .perspective-q {
+      font-size: 12px;
+      font-style: italic;
+      color: var(--ink-mid);
+      padding: 4px 0;
+      border-bottom: 1px solid var(--rule-soft);
+      line-height: 1.4;
+    }
+    .perspective-q:last-child { border-bottom: none; }
+
+    /* ── FINAL REFLECTION ── */
+    .reflection-wrap { border: 1px solid var(--rule); }
+    .reflection-block {
+      border-bottom: 1px solid var(--rule-soft);
+      padding: 12px 14px;
+    }
+    .reflection-block:last-child { border-bottom: none; }
+    .reflection-block-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-bottom: 8px;
+    }
+    .reflection-block-label.red { color: var(--red); }
+    .reflection-list { list-style: none; }
+    .reflection-list li {
+      font-size: 13px;
+      padding: 4px 0;
+      border-bottom: 1px solid var(--rule-soft);
+      padding-left: 14px;
+      position: relative;
+    }
+    .reflection-list li:last-child { border-bottom: none; }
+    .reflection-list li::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      color: var(--ink-light);
+    }
+
+    .checklist { list-style: none; }
+    .checklist li {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--rule-soft);
+      font-size: 12px;
+    }
+    .checklist li:last-child { border-bottom: none; }
+    .check-box {
+      width: 13px; height: 13px;
+      border: 1.5px solid var(--rule);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .assumption-matrix { width: 100%; border-collapse: collapse; }
+    .assumption-matrix th, .assumption-matrix td {
+      border: 1px solid var(--rule-soft);
+      padding: 7px 10px;
+      font-size: 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+    .assumption-matrix th {
+      background: var(--ink);
+      color: var(--bg);
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    .assumption-matrix tr:nth-child(even) td { background: rgba(0,0,0,0.025); }
+
+    /* ── FOOTER DISCLAIMER ── */
+    .disclaimer {
+      border-top: 2px solid var(--rule);
+      margin-top: 24px;
+      padding: 10px 0;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-align: center;
+      color: var(--ink-light);
+      text-transform: uppercase;
+    }
+
+    /* ── UTILITIES ── */
+    .mt-20 { margin-top: 20px; }
+    .mt-10 { margin-top: 10px; }
+    .mb-10 { margin-bottom: 10px; }
+    .hidden { display: none !important; }
+
+    /* ── API KEY BANNER ── */
+    .api-banner {
+      background: var(--ink);
+      color: var(--bg);
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 11px;
+      letter-spacing: 0.06em;
+    }
+    .api-banner label {
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      white-space: nowrap;
+      font-size: 10px;
+    }
+    .api-input {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: white;
+      font-family: 'Libre Franklin', monospace;
+      font-size: 12px;
+      padding: 5px 10px;
+      outline: none;
+      flex: 1;
+      max-width: 380px;
+    }
+    .api-input::placeholder { color: rgba(255,255,255,0.4); }
+    .api-input:focus { border-color: rgba(255,255,255,0.6); }
+    .api-status {
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.5);
+    }
+    .api-status.ok { color: #7ecb7e; }
+
+    @media (max-width: 768px) {
+      .input-grid { grid-template-columns: 1fr; }
+      .input-field:nth-child(2n) { border-right: 1px solid var(--rule-soft); }
+      .input-field.full { border-right: 1px solid var(--rule-soft); }
+      .summary-grid { grid-template-columns: 1fr 1fr; }
+      .summary-cell.wide { grid-column: span 2; }
+      .blindspot-grid { grid-template-columns: 1fr; }
+      .blindspot-col { border-right: none; border-bottom: 1px solid var(--rule-soft); }
+      .perspective-grid { grid-template-columns: 1fr; }
+      .perspective-cell:nth-child(2n) { border-right: none; }
+      .perspective-cell:nth-last-child(-n+2) { border-bottom: 1px solid var(--rule-soft); }
+      .perspective-cell:last-child { border-bottom: none; }
+    }
+    :root { --ink-light: #625f59; }
+    [hidden] { display: none !important; }
+    :focus-visible { outline: 2px solid var(--red); outline-offset: 3px; }
+    .field-input:focus, .field-textarea:focus { outline: 2px solid var(--red); outline-offset: -2px; }
+    .api-banner { flex-wrap: wrap; }
+    .api-banner input { min-width: 150px; max-width: 240px; }
+    button { cursor: pointer; font: inherit; border: 1px solid currentColor; background: transparent; color: inherit; padding: 6px 10px; }
+    button:disabled { cursor: not-allowed; opacity: .6; }
+    .toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; padding: 12px 0; }
+    .history-row { display: flex; gap: 12px; align-items: baseline; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--rule-soft); }
+    .history-row button { text-align: left; overflow-wrap: anywhere; }
+    .meta, .grounding { color: var(--ink-mid); font-size: 11px; padding: 8px 0; overflow-wrap: anywhere; }
+    .grounding { border-top: 1px solid var(--rule-soft); margin-top: 8px; }
+    .grounding blockquote { padding: 4px 0 4px 10px; border-left: 2px solid var(--rule-soft); }
+    .answer-field { border: 1px solid var(--rule-soft); margin: 10px 0; padding: 10px; }
+    .answer-field textarea { min-height: 80px; border: 1px solid var(--rule-soft); margin: 8px 0; }
+    .empty-state { padding: 16px 0; color: var(--ink-mid); }
+    .field-error { display: block; color: var(--red); padding: 0 10px 6px; font-size: 12px; }
+    .status-note { border-left: 3px solid var(--rule); padding: 10px 12px; margin: 12px 0; }
+    .checklist input { accent-color: var(--ink); }
+    h1,h2 { font-weight: inherit; }
+    #analysis-output, #history { overflow-wrap: anywhere; }
+    .masthead-sub { flex-wrap: wrap; }
+    @media (max-width: 600px) { .masthead, .api-banner { padding-left: 14px; padding-right: 14px; } .page-wrap { padding: 0 14px 30px; } .action-bar { flex-direction: column; align-items: stretch; } .masthead-top { flex-wrap: wrap; gap: 6px; } .section-header { flex-wrap: wrap; } .history-row { flex-wrap: wrap; } .assumption-item { grid-template-columns: 1fr; } }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::after { animation: none !important; transition: none !important; } }
+  </style>
+</head>
+<body>
+
+<form class="api-banner" id="accountForm">
+  <span id="accountStatus" role="status">Connecting…</span>
+  <label for="email">Email</label><input class="api-input" id="email" type="email" autocomplete="email" required />
+  <label for="password">Password</label><input class="api-input" id="password" type="password" autocomplete="current-password" minlength="8" required />
+  <button type="submit" id="signIn">Sign in</button>
+  <button type="button" id="signUp">Create account</button>
+  <button type="button" id="recover">Reset password</button>
+  <button type="button" id="signOut" hidden>Sign out</button>
+</form>
+
+<!-- MASTHEAD -->
+<header class="masthead">
+  <div class="masthead-top">
+    <span>Decision Intelligence Tool</span>
+    <span id="dateStamp"></span>
+    <span>Critical Thinking Edition</span>
+  </div>
+  <h1 class="masthead-title">THIRD EYE</h1>
+  <div class="masthead-sub">
+    <span>What you see</span>
+    <span class="dot"></span>
+    <span>What you miss</span>
+    <span class="dot"></span>
+    <span>What it means</span>
+    <span class="dot"></span>
+    <span>Your decision remains yours</span>
+  </div>
+</header>
+
+<main class="page-wrap">
+  <div id="serviceStatus" class="status-note" role="status"></div>
+  <div id="notice" class="meta" role="status" aria-live="polite"></div>
+  <section id="history" hidden aria-labelledby="historyHeading">
+    <div class="section-header"><h2 class="section-headline" id="historyHeading">Your Decision Archive</h2></div>
+    <div class="toolbar"><button id="newDecision" type="button">New decision</button><button id="refreshHistory" type="button">Refresh archive</button></div>
+    <div id="historyList"></div><button id="moreHistory" type="button" hidden>Load more decisions</button>
+  </section>
+
+  <!-- ── INPUT ── -->
+  <div class="input-section">
+    <div class="section-header">
+      <span class="section-label">Step 0</span>
+      <span class="section-headline">Describe Your Decision</span>
+    </div>
+
+    <form id="decisionForm" novalidate>
+    <div class="input-grid">
+      <div class="input-field full">
+        <label class="field-label">Decision or Question <span>— What are you deciding?</span></label>
+        <textarea class="field-textarea tall" id="f-decision" placeholder="e.g. Should I accept the 6-month internship offer from Company X?"></textarea>
+      </div>
+      <div class="input-field full">
+        <label class="field-label">Context & Background <span>— Relevant facts, history, current situation</span></label>
+        <textarea class="field-textarea" id="f-context" placeholder="e.g. I am a second-year engineering student. The company is well-known in the fintech space…"></textarea>
+      </div>
+      <div class="input-field">
+        <label class="field-label">Options Being Considered <span>— List all alternatives</span></label>
+        <textarea class="field-textarea" id="f-options" placeholder="e.g. Accept the internship / Decline and focus on academics / Look for a different internship"></textarea>
+      </div>
+      <div class="input-field">
+        <label class="field-label">Reasons Favouring Current Preference <span>— Why are you leaning this way?</span></label>
+        <textarea class="field-textarea" id="f-reasons" placeholder="e.g. Good stipend, close to home, industry experience, prestigious company…"></textarea>
+      </div>
+      <div class="input-field">
+        <label class="field-label">Constraints, Priorities & Concerns <span>— What limits or worries you?</span></label>
+        <textarea class="field-textarea" id="f-constraints" placeholder="e.g. Cannot miss more than 20% of college classes, limited savings, health concerns…"></textarea>
+      </div>
+      <div class="input-field">
+        <label class="field-label">People or Factors Affected <span>— Who or what else is impacted?</span></label>
+        <textarea class="field-textarea" id="f-affected" placeholder="e.g. Family, academic performance, classmates for group projects, college GPA…"></textarea>
+      </div>
+      <div class="input-field full">
+        <label class="field-label">Deadline or Time Horizon <span>Optional — When must you decide? What is the timeframe?</span></label>
+        <input class="field-input" id="f-deadline" type="text" placeholder="e.g. I need to respond within two weeks; the commitment lasts six months." />
+      </div>
+    </div>
+
+    <div class="toolbar"><label><input id="researchEnabled" type="checkbox" /> Include public web evidence</label><span id="researchStatus" class="meta"></span></div>
+    <div class="action-bar">
+      <span class="action-hint">THIRD EYE helps examine your reasoning. Your decision remains yours.</span>
+      <button type="button" id="saveDecision">SAVE DECISION</button>
+      <button class="btn-examine" id="examineBtn" type="submit">EXAMINE DECISION</button>
+    </div>
+    </form>
+    <div class="toolbar"><span id="saveStatus" class="meta">Your decision has not been saved.</span><button id="deleteDecision" type="button" hidden>Delete decision</button></div>
+    <div id="analysisHistory"></div><button id="moreAnalyses" type="button" hidden>Load more analyses</button>
+
+    <div id="loadingIndicator" class="hidden">
+      <div class="loading-bar" style="margin-top:4px;"></div>
+      <div class="loading-label" id="loadingLabel">Analysing reasoning…</div>
+    </div>
+    <div id="errorMsg" class="hidden" role="alert" tabindex="-1" style="color:var(--red);font-size:12px;padding:8px 0;"></div>
+  </div>
+
+  <hr class="section-rule thick" />
+
+  <!-- ── ANALYSIS OUTPUT ── -->
+  <div id="analysis-output" tabindex="-1">
+    <div id="analysisMeta" class="status-note"></div>
+    <div id="limitations" class="meta"></div>
+
+    <!-- STAGE 1: DECISION SUMMARY -->
+    <div class="mt-20">
+      <div class="section-header">
+        <span class="section-num">01</span>
+        <span class="section-label">Decision Summary</span>
+        <span class="section-headline">What We Heard</span>
+      </div>
+      <div class="summary-grid" id="summaryGrid"></div>
+    </div>
+
+    <hr class="section-rule" />
+
+    <!-- STAGE 2: ASSUMPTION ANALYSIS -->
+    <div class="mt-20">
+      <div class="section-header">
+        <span class="section-num">02</span>
+        <span class="section-label">Assumption Analysis</span>
+        <span class="section-headline">What You May Be Taking for Granted</span>
+      </div>
+      <div class="assumption-list" id="assumptionList"></div>
+    </div>
+
+    <hr class="section-rule" />
+
+    <!-- STAGE 3: BLIND SPOTS -->
+    <div class="mt-20">
+      <div class="section-header">
+        <span class="section-num">03</span>
+        <span class="section-label red">Blind-Spot Detection</span>
+        <span class="section-headline">Factors You May Have Overlooked</span>
+      </div>
+      <div class="blindspot-grid" id="blindspotGrid"></div>
+    </div>
+
+    <hr class="section-rule" />
+
+    <!-- STAGE 4: REASONING CONFLICTS -->
+    <div class="mt-20">
+      <div class="section-header">
+        <span class="section-num">04</span>
+        <span class="section-label">Reasoning Conflicts</span>
+        <span class="section-headline">Tensions Within Your Thinking</span>
+      </div>
+      <div class="conflict-list" id="conflictList"></div>
+    </div>
+
+    <hr class="section-rule" />
+
+    <!-- STAGE 5: PERSPECTIVE EXPANSION -->
+    <div class="mt-20">
+      <div class="section-header">
+        <span class="section-num">05</span>
+        <span class="section-label">Perspective Expansion</span>
+        <span class="section-headline">Other Vantage Points</span>
+      </div>
+      <div class="perspective-grid" id="perspectiveGrid"></div>
+    </div>
+
+    <hr class="section-rule" />
+
+    <!-- FINAL REFLECTION -->
+    <div class="mt-20">
+      <div class="section-header">
+        <span class="section-label red">Final Reflection</span>
+        <span class="section-headline">Before You Decide</span>
+      </div>
+      <div class="reflection-wrap" id="reflectionWrap"></div>
+    </div>
+
+    <section class="mt-20" aria-labelledby="sourcesHeading"><h2 class="section-headline" id="sourcesHeading">Evidence &amp; Sources</h2><div id="sources"></div></section>
+    <section class="mt-20" aria-labelledby="answersHeading"><h2 class="section-headline" id="answersHeading">Continue Your Reflection</h2><p class="meta">Save answers, then examine the decision again to include them in a new analysis.</p><div id="answers"></div></section>
+    <div class="disclaimer">
+      THIRD EYE helps you think more critically — the decision remains entirely yours. &nbsp;|&nbsp; This analysis is not advice.
+    </div>
+
+  </div><!-- /analysis-output -->
+
+</main><!-- /page-wrap -->
+
+<script type="module" src="/assets/app.js"></script>
+
+</body>
+</html>
