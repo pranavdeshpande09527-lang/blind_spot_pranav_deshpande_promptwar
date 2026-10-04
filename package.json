@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc && node scripts/build.mjs",
+    "prestart": "npm run build",
     "start": "node dist/server.js",
     "typecheck": "tsc --noEmit && tsc -p tsconfig.browser.json",
     "test": "tsx --test tests/*.test.ts",
