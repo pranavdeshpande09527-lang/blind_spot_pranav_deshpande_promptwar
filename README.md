@@ -62,6 +62,8 @@ Browser tests cover desktop/mobile layouts. The complete account/save/analyze/re
 
 `test:live` sends a test-only evaluation input to the configured AI and checks Supabase availability without seeding records. Set `TEST_EMAIL` and `TEST_PASSWORD` for an existing test account to enable its authenticated read check. `npm run test:live -- --all` runs eight evaluation cases and can incur provider usage. Human review is still needed for neutrality and usefulness. See `docs/verification.md` for observed results.
 
+`npm run test:live:workflow` uses that confirmed account to exercise the real API/database, live analysis, idempotency, saved answers, reanalysis and cleanup. `npm run test:live:browser` tests the running application at `APP_ORIGIN` in Chromium with no mocked responses. Both create and delete only their own test decisions. `npm run check:services` checks model availability and Supabase Auth settings without exposing keys. Add `--research` to the live smoke test to check opt-in retrieval.
+
 ## Render deployment
 
 `render.yaml` defines one Node service, build `npm ci && npm run build`, start `npm start`, health `/healthz`. Connect an actual Git repository to Render, provide the required environment, and use the secret whose hash is installed in that database. Set `APP_ORIGIN` and Supabase redirects to the actual hostname.

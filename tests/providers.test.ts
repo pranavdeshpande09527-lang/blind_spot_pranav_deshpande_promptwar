@@ -2,12 +2,17 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { readConfig } from '../src/config.js';
-import { synthesize, fetchJSON } from '../src/providers.js';
+import { synthesize, fetchJSON, outputSchema } from '../src/providers.js';
 import { decisionSchema, type Snapshot } from '../src/shared/schemas.js';
 
 const config = readConfig({ GEMINI_API_KEY: 'test', GEMINI_MODEL: 'configured-model', GROQ_API_KEY: 'test', GROQ_MODEL: 'configured-fallback' });
 const snapshot: Snapshot = { ...decisionSchema.parse({ decision: 'Consider an internship?', context: 'Mentorship matters to me.' }), id: randomUUID(), user_id: randomUUID(), revision: 1, created_at: new Date().toISOString(), updated_at: new Date().toISOString(), reflections: [] };
 const valid = { summary: { decision: snapshot.decision, options: 'Unknown', statedGoals: 'Unknown', keyReasons: 'Unknown', explicitConstraints: 'Unknown', affected: 'Unknown' }, assumptions: [], blindspots: [], conflicts: [], perspectives: [], reflection: { topBlindspots: [], strongestAssumptions: [], unansweredQuestions: [], infoToGather: [], assumptionMatrix: [], checklist: [] }, limitations: [] };
+test('provider schema retains structure without constraint combinations rejected by Gemini', () => {
+  const json = JSON.stringify(outputSchema);
+  for (const key of ['maxItems','minItems','maxLength','format','additionalProperties','$schema']) assert.ok(!json.includes(`"${key}"`));
+  assert.ok(json.includes('inputQuotes')); assert.ok(json.includes('sourceIds')); assert.ok(json.includes('required')); assert.ok(json.includes('enum'));
+});
 test('provider failure classification, bounded fallback, truncation, and malformed output', async () => {
   const original = globalThis.fetch;
   try {

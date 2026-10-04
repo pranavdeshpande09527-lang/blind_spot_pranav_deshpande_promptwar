@@ -4,7 +4,13 @@ import { AppError, dbError } from './errors.js';
 export class Repository {
   constructor(readonly db: SupabaseClient, readonly userId: string) {}
   async rpc<T>(name: string, args: Record<string, unknown> = {}): Promise<T> {
-    const { data, error } = await this.db.rpc(name, args); if (error) dbError(error); return data as T;
+    const { data, error } = await this.db.rpc(name, args); if (error) dbError(error);
+    // PostgREST may represent a composite-returning function as a one-row array.
+    if (['create_decision','update_decision','finish_analysis'].includes(name) && Array.isArray(data)) {
+      if (data.length !== 1) throw new AppError(503, 'DATABASE_UNAVAILABLE', 'The database returned an unexpected result.');
+      return data[0] as T;
+    }
+    return data as T;
   }
   async decision(id: string): Promise<Decision> {
     const { data, error } = await this.db.from('decisions').select('*').eq('id', id).eq('user_id', this.userId).maybeSingle();

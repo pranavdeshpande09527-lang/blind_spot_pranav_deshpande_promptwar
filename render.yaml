@@ -9,7 +9,7 @@ services:
       - key: NODE_ENV
         value: production
       - key: NODE_VERSION
-        value: 24
+        value: "24"
       - key: APP_ORIGIN
         sync: false
       - key: SUPABASE_URL

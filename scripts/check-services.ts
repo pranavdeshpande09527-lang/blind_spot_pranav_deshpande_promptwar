@@ -1,7 +1,6 @@
 import { readConfig } from '../src/config.js';
 import { readFile } from 'node:fs/promises';
-import { z } from 'zod';
-import { analysisSchema } from '../src/shared/schemas.js';
+import { outputSchema } from '../src/providers.js';
 const config = readConfig();
 for (const provider of ['gemini','groq'] as const) {
   const model = provider === 'gemini' ? config.GEMINI_MODEL : config.GROQ_MODEL;
@@ -22,13 +21,24 @@ if (process.argv.includes('--generation')) {
   try {
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(config.GEMINI_MODEL)}:generateContent`, {
       method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': config.GEMINI_API_KEY },
-      body: JSON.stringify({ contents: [{ parts: [{ text: JSON.stringify(examples[0]) }] }], generationConfig: { responseMimeType: 'application/json', responseJsonSchema: z.toJSONSchema(analysisSchema), maxOutputTokens: 256 } }), signal: AbortSignal.timeout(18000),
+      body: JSON.stringify({ contents: [{ parts: [{ text: JSON.stringify(examples[0]) }] }], generationConfig: { responseMimeType: 'application/json', responseJsonSchema: outputSchema, maxOutputTokens: 256 } }), signal: AbortSignal.timeout(18000),
     });
     const data = await response.json();
     let message = String(data.error?.message || '');
     for (const value of [config.GEMINI_API_KEY, config.GROQ_API_KEY, config.TAVILY_API_KEY].filter(Boolean)) message = message.replaceAll(value,'[redacted]');
     console.log(JSON.stringify({ check: 'generation_schema', status: response.status, message: message.slice(0,1800) }));
   } catch { console.log('Generation diagnostic timed out or failed.'); }
+}
+if (process.argv.includes('--formats')) {
+  const content = JSON.stringify(JSON.parse(await readFile('tests/evaluation-cases.json','utf8'))[0]);
+  const plainSchema = { type: 'object', properties: { summary: { type: 'string' } }, required: ['summary'] };
+  for (const [name, extra] of Object.entries({ text: {}, json: { responseMimeType: 'application/json', responseJsonSchema: plainSchema }, legacy: { responseMimeType: 'application/json', responseSchema: plainSchema } })) {
+    try {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(config.GEMINI_MODEL)}:generateContent`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': config.GEMINI_API_KEY }, body: JSON.stringify({ contents: [{ parts: [{ text: 'Briefly summarize this input: ' + content }] }], generationConfig: { maxOutputTokens: 512, ...extra } }), signal: AbortSignal.timeout(18000) });
+      const data = await response.json();
+      console.log(JSON.stringify({ check: name, status: response.status, errorStatus: data.error?.status, message: String(data.error?.message || '').replaceAll(config.GEMINI_API_KEY,'[redacted]').slice(0,800) }));
+    } catch { console.log(JSON.stringify({ check: name, failed: true })); }
+  }
 }
 try {
   const response = await fetch(`${config.SUPABASE_URL}/auth/v1/settings`, { headers: { apikey: config.SUPABASE_PUBLISHABLE_KEY }, signal: AbortSignal.timeout(10000) });

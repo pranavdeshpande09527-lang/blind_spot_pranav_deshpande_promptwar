@@ -10,3 +10,4 @@ playwright-report/
 *.dump
 *.log
 supabase/setup-local.sql
+

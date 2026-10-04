@@ -14,6 +14,7 @@ let historyCursor: string | null = null;
 let analysisCursor: string | null = null;
 let config: { analysisAvailable: boolean; researchAvailable: boolean; fallbackAvailable: boolean; setupRequired: string[] };
 let recovering = false;
+const unsavedAnswers = new Set<string>();
 const dates = (value: string) => new Date(value).toLocaleString();
 el('dateStamp').textContent = new Date().toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase();
 for (const [field, max] of Object.entries(fieldLimits)) {
@@ -79,6 +80,7 @@ async function save(): Promise<Decision> {
 }
 function clearDecision() {
   current = null; selected = null; dirty = false;
+  unsavedAnswers.clear();
   el<HTMLFormElement>('decisionForm').reset(); el('analysis-output').classList.remove('visible'); el('analysisHistory').replaceChildren(); el('moreAnalyses').hidden = true;
   updateSaveStatus(); input('f-decision').focus();
 }
@@ -104,9 +106,10 @@ async function loadAnalyses(append = false) {
   analysisCursor = page.nextCursor; el('moreAnalyses').hidden = !analysisCursor;
 }
 async function openDecision(id: string) {
-  if (dirty && !confirm('Discard unsaved changes and open this decision?')) return;
+  if ((dirty || unsavedAnswers.size) && !confirm('Discard unsaved changes and open this decision?')) return;
   const saved = await api<Decision>(`/decisions/${id}`);
   current = saved; selected = null; dirty = false;
+  unsavedAnswers.clear();
   for (const key of Object.keys(fieldLimits)) input(`f-${key}`).value = saved[key as keyof typeof fieldLimits];
   input('researchEnabled').checked = saved.researchEnabled;
   el('analysis-output').classList.remove('visible'); updateSaveStatus(); await loadAnalyses();
@@ -143,18 +146,21 @@ async function showAnalysis(analysis: Analysis) {
 }
 async function renderAnswers() {
   const answers = await api<Reflection[]>(`/decisions/${current!.id}/reflections`);
+  unsavedAnswers.clear();
   el('answers').replaceChildren();
   for (const q of selected!.questions) {
     const wrap = document.createElement('div'); wrap.className = 'answer-field';
     const label = document.createElement('label'); label.htmlFor = `answer-${q.id}`; label.textContent = q.text;
     const area = document.createElement('textarea'); area.id = label.htmlFor; area.className = 'field-textarea'; area.maxLength = 2000;
     const existing = answers.find(a => a.analysis_id === selected!.id && a.question_id === q.id); area.value = existing?.answer || '';
+    area.addEventListener('input', () => unsavedAnswers.add(q.id));
     const button = document.createElement('button'); button.type = 'button'; button.textContent = existing ? 'Update answer' : 'Save answer';
     const state = document.createElement('span'); state.className = 'meta'; state.textContent = existing ? ' Saved' : '';
     button.addEventListener('click', () => action(async () => {
       if (!area.value.trim()) throw new Error('Write an answer before saving.');
       if (dirty) await save();
       const result = await api<{ decisionRevision: number; reflection: Reflection }>(`/decisions/${current!.id}/reflections/${q.id}`, { method: 'PUT', body: JSON.stringify({ analysisId: selected!.id, answer: area.value.trim(), expectedRevision: current!.revision }) });
+      unsavedAnswers.delete(q.id);
       current = await api<Decision>(`/decisions/${current!.id}`); updateSaveStatus(); button.textContent = 'Update answer'; state.textContent = ' Saved'; notice(`Answer saved in revision ${result.decisionRevision}. Examine again to include it.`);
     }));
     wrap.append(label, area, button, state); el('answers').append(wrap);
@@ -171,6 +177,7 @@ async function poll(run: Analysis): Promise<Analysis> {
   return run;
 }
 async function runAnalysis() {
+  if (unsavedAnswers.size && !confirm('Some reflection answers have not been saved. Continue without including them?')) return;
   if (!config.analysisAvailable) throw new Error('Analysis setup is incomplete. See the service notice above. You can still save your decision.');
   const saved = await save();
   const storageKey = `third-eye-pending:${session!.user.id}:${saved.id}`;
@@ -201,7 +208,7 @@ function updateAccount() {
 el('decisionForm').addEventListener('input', () => { dirty = true; updateSaveStatus(); });
 el('decisionForm').addEventListener('submit', e => { e.preventDefault(); void action(runAnalysis, 'Examining your saved reasoning…'); });
 el('saveDecision').addEventListener('click', () => action(async () => { await save(); notice('Decision saved.'); }));
-el('newDecision').addEventListener('click', () => { if (!dirty || confirm('Discard unsaved changes and start a new decision?')) clearDecision(); });
+el('newDecision').addEventListener('click', () => { if ((!dirty && !unsavedAnswers.size) || confirm('Discard unsaved changes and start a new decision?')) clearDecision(); });
 el('refreshHistory').addEventListener('click', () => action(async () => { await loadHistory(); if (current) await loadAnalyses(); }));
 el('moreHistory').addEventListener('click', () => action(() => loadHistory(true)));
 el('moreAnalyses').addEventListener('click', () => action(() => loadAnalyses(true)));
@@ -227,10 +234,10 @@ el('recover').addEventListener('click', () => action(async () => {
   const { error } = await auth.auth.resetPasswordForEmail(input('email').value.trim(), { redirectTo: location.origin }); if (error) throw error; notice('If this account exists, a password recovery email has been requested.');
 }));
 el('signOut').addEventListener('click', () => action(async () => {
-  if (dirty && !confirm('Sign out and discard unsaved changes?')) return;
+  if ((dirty || unsavedAnswers.size) && !confirm('Sign out and discard unsaved changes?')) return;
   const { error } = await auth!.auth.signOut(); if (error) throw error; clearDecision(); notice('Signed out.');
 }));
-window.addEventListener('beforeunload', e => { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
+window.addEventListener('beforeunload', e => { if (dirty || unsavedAnswers.size) { e.preventDefault(); e.returnValue = ''; } });
 
 async function initialize() {
   const response = await fetch('/api/config'); if (!response.ok) throw new Error('Unable to load application configuration.');
@@ -244,7 +251,7 @@ async function initialize() {
     const changed = session?.user.id !== next?.user.id;
     session = next; if (event === 'PASSWORD_RECOVERY') recovering = true;
     updateAccount();
-    if (changed && !next) { clearDecision(); el('historyList').replaceChildren(); }
+    if (changed) { clearDecision(); el('historyList').replaceChildren(); }
     if (next && (changed || event === 'SIGNED_IN' || event === 'INITIAL_SESSION')) setTimeout(() => { void loadHistory().catch(showError); }, 0);
   });
   const { data: restored, error } = await auth.auth.getSession(); if (error) throw error; session = restored.session; updateAccount();
